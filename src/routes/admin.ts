@@ -59,9 +59,12 @@ router.post('/login', async (req: Request, res: Response) => {
     res.cookie('admin_token', token, {
       httpOnly: true,      // Inaccessible via JavaScript
       secure: process.env.NODE_ENV === 'production', // HTTPS only en prod
-      sameSite: 'strict',  // Protection CSRF
-      maxAge: 3600000,     // 1h
-      path: '/'
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',  // 'none' en prod pour cross-domain
+       maxAge: 3600000,
+      path: '/',
+      domain: process.env.NODE_ENV === 'production' 
+        ? '.shoshin-web-services.com'  // Domaine partagé frontend/backend
+        : undefined
     })
 
     return res.json({ success: true })
@@ -81,8 +84,11 @@ router.post('/logout', (_req: Request, res: Response) => {
   res.clearCookie('admin_token', {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict',
-    path: '/'
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',  // Pareil que login
+    path: '/',
+    domain: process.env.NODE_ENV === 'production' 
+      ? '.shoshin-web-services.com' 
+      : undefined
   })
 
   return res.json({ success: true })
