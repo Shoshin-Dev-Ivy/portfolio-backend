@@ -43,6 +43,10 @@ app.use('/api/contact', contactRouter)
 app.use('/api/maintenance', maintenanceRouter)
 app.use('/api/admin', adminRouter)
 
+app.get("/", (req, res) => {
+  res.status(200).json({ status: "Backend running" });
+});
+
 // Route 404
 app.use('*', (_req, res) => {
   res.status(404).json({ error: 'Route not found' })
